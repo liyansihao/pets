@@ -22,7 +22,6 @@ const Hero: React.FC<HeroProps> = ({ onGenerated }) => {
     plan: 'free'
   } : null;
 
-  const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<StyleTemplate>(STYLE_TEMPLATES[0]);
@@ -40,7 +39,6 @@ const Hero: React.FC<HeroProps> = ({ onGenerated }) => {
         return;
       }
 
-      setFile(selected);
       setError(null);
       setIsUploading(true);
 
@@ -68,9 +66,8 @@ const Hero: React.FC<HeroProps> = ({ onGenerated }) => {
 
         const data = await response.json();
         setImageUrl(data.url);
-      } catch (err: any) {
-        setError(err.message || 'Failed to upload image. Please try again.');
-        setFile(null);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Failed to upload image. Please try again.');
         setPreview(null);
       } finally {
         setIsUploading(false);
@@ -101,7 +98,7 @@ const Hero: React.FC<HeroProps> = ({ onGenerated }) => {
       } else {
         setError("Generation failed. Please try again.");
       }
-    } catch (err: any) {
+    } catch {
       setError("Something went wrong. Please check your API key or connection.");
     } finally {
       setIsGenerating(false);
@@ -109,7 +106,6 @@ const Hero: React.FC<HeroProps> = ({ onGenerated }) => {
   };
 
   const reset = () => {
-    setFile(null);
     setPreview(null);
     setImageUrl(null);
     setResult(null);

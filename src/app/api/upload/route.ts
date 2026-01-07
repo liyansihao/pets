@@ -54,13 +54,11 @@ export async function POST(request: Request) {
     return NextResponse.json({
       url: blob.url,
       filename: blob.pathname,
-      size: blob.size,
-      contentType: blob.contentType,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Upload error:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to upload file' },
+      { error: error instanceof Error ? error.message : 'Failed to upload file' },
       { status: 500 }
     );
   }

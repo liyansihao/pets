@@ -2,17 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { auth } from "@/lib/auth/server";
 import { db } from "@/db";
-import { user } from "@/db/schema";
+import { user as userSchema } from "@/db/schema";
 import { eq } from "drizzle-orm";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-01-27.acacia",
-});
 
 const PRICE_ID = process.env.PRICE_ID!;
 const CREDITS_PER_PURCHASE = 200; // 200 credits for $10
 
 export async function POST(req: NextRequest) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2025-12-15.clover",
+  });
   try {
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -28,7 +27,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create or get Stripe customer
-    let customerId = (user as any).stripeCustomerId as string | undefined;
+    let customerId = (user as { stripeCustomerId?: string }).stripeCustomerId;
 
     if (!customerId) {
       const customer = await stripe.customers.create({
@@ -42,9 +41,9 @@ export async function POST(req: NextRequest) {
 
       // Update user's stripeCustomerId in the database
       await db
-        .update(user)
+        .update(userSchema)
         .set({ stripeCustomerId: customerId })
-        .where(eq(user.id, user.id));
+        .where(eq(userSchema.id, user.id));
     }
 
     // Create checkout session

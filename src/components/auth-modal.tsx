@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { signIn } from '@/lib/auth/client';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 interface AuthModalProps {

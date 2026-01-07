@@ -2,16 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { headers } from "next/headers";
 import { db } from "@/db";
-import { user, payments, creditUsage } from "@/db/schema";
+import { user, payments } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-01-27.acacia",
-});
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
 export async function POST(req: NextRequest) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2025-12-15.clover",
+  });
   try {
     const body = await req.text();
     const signature = (await headers()).get("stripe-signature")!;

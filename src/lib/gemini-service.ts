@@ -28,7 +28,7 @@ export const generatePetPortrait = async (base64Image: string, prompt: string): 
       },
     });
 
-    const candidates = (response as any).candidates;
+    const candidates = (response as { candidates?: Array<{ content: { parts: Array<{ inlineData?: { data: string } }> } }> }).candidates;
     if (!candidates || candidates.length === 0) return null;
 
     for (const part of candidates[0].content.parts) {

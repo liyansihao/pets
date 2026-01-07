@@ -25,7 +25,7 @@ const AboutSection = () => (
       <div>
         <h2 className="text-4xl lg:text-5xl font-bold mb-8 festive-font">Made for Pet Lovers, Built for the Holidays</h2>
         <p className="text-red-100 text-xl leading-relaxed mb-10">
-          Pets helps you turn everyday pet photos into festive holiday portraits you'll actually want to share. No complicated tools—just upload and generate.
+          Pets helps you turn everyday pet photos into festive holiday portraits you&apos;ll actually want to share. No complicated tools—just upload and generate.
         </p>
         <div className="grid gap-6">
           {["Perfect for holiday cards and gifts", "Great for social posts and family sharing", "Works for dogs, cats, and other pets"].map((item, i) => (
@@ -79,7 +79,7 @@ const TestimonialSection = () => (
             <div className="flex gap-1 mb-6">
               {[...Array(5)].map((_, j) => <span key={j} className="text-yellow-400 text-lg">★</span>)}
             </div>
-            <p className="text-slate-700 dark:text-slate-300 text-lg leading-relaxed mb-8 italic">"{t.text}"</p>
+            <p className="text-slate-700 dark:text-slate-300 text-lg leading-relaxed mb-8 italic">&quot;{t.text}&quot;</p>
             <div className="flex items-center gap-4">
               <img
                 src={t.avatar}
@@ -105,7 +105,7 @@ const CTASection = () => {
     <section className="py-32 bg-slate-900 dark:bg-black text-white relative overflow-hidden transition-colors duration-300">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_rgba(220,38,38,0.2)_0%,_transparent_70%)]"></div>
       <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-        <h2 className="text-5xl font-bold mb-6 festive-font">Ready to Make Your Pet's Christmas Portrait?</h2>
+        <h2 className="text-5xl font-bold mb-6 festive-font">Ready to Make Your Pet&apos;s Christmas Portrait?</h2>
         <p className="text-xl text-slate-400 mb-12">Upload a photo and generate your first festive look in seconds.</p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
           <button onClick={scrollToTop} className="w-full sm:w-auto px-12 py-5 bg-red-600 text-white rounded-full font-bold text-xl hover:bg-red-700 transition-all shadow-2xl shadow-red-900/40 transform hover:-translate-y-1">

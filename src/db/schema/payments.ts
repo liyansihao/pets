@@ -1,4 +1,4 @@
-import { pgTable, text, integer, timestamp, pgTableFn, pgSchema } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, timestamp } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 
 export const payments = pgTable("payments", {
