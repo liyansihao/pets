@@ -8,7 +8,7 @@ import {
   publicRoutes,
 } from "./routes";
 
-export async function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const session = getSessionCookie(request);
 
   const isApiAuth = request.nextUrl.pathname.startsWith(apiAuthPrefix);
@@ -33,7 +33,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (!session && !isPublicRoute) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/signin", request.url));
   }
 
   return NextResponse.next();
