@@ -24,32 +24,68 @@ const Hero: React.FC<HeroProps> = ({ onGenerated }) => {
 
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<StyleTemplate>(STYLE_TEMPLATES[0]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (selected) {
       if (selected.size > 10 * 1024 * 1024) {
         setError("File size too large. Max 10MB.");
         return;
       }
+
       setFile(selected);
       setError(null);
+      setIsUploading(true);
+
+      // 显示本地预览
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
       };
       reader.readAsDataURL(selected);
+
+      // 上传到 Vercel Blob
+      try {
+        const formData = new FormData();
+        formData.append('file', selected);
+
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Upload failed');
+        }
+
+        const data = await response.json();
+        setImageUrl(data.url);
+      } catch (err: any) {
+        setError(err.message || 'Failed to upload image. Please try again.');
+        setFile(null);
+        setPreview(null);
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 
   const handleGenerate = async () => {
-    if (!preview) {
+    if (!imageUrl) {
       setError("Please upload a photo first.");
+      return;
+    }
+
+    if (isUploading) {
+      setError("Please wait for the upload to complete.");
       return;
     }
 
@@ -58,10 +94,10 @@ const Hero: React.FC<HeroProps> = ({ onGenerated }) => {
     setResult(null);
 
     try {
-      const generatedUrl = await generatePetPortrait(preview, selectedStyle.prompt);
+      const generatedUrl = await generatePetPortrait(imageUrl, selectedStyle.prompt);
       if (generatedUrl) {
         setResult(generatedUrl);
-        onGenerated?.(preview, generatedUrl, selectedStyle.label);
+        onGenerated?.(imageUrl, generatedUrl, selectedStyle.label);
       } else {
         setError("Generation failed. Please try again.");
       }
@@ -75,6 +111,7 @@ const Hero: React.FC<HeroProps> = ({ onGenerated }) => {
   const reset = () => {
     setFile(null);
     setPreview(null);
+    setImageUrl(null);
     setResult(null);
     setError(null);
   };
@@ -150,9 +187,9 @@ const Hero: React.FC<HeroProps> = ({ onGenerated }) => {
               <div className="flex flex-col gap-3">
                 <button
                   onClick={handleGenerate}
-                  disabled={isGenerating || !preview}
+                  disabled={isGenerating || isUploading || !imageUrl}
                   className={`w-full py-4 rounded-full font-bold text-lg shadow-xl transition-all transform active:scale-95 flex items-center justify-center gap-2 ${
-                    isGenerating || !preview
+                    isGenerating || isUploading || !imageUrl
                     ? 'bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-500 cursor-not-allowed shadow-none'
                     : 'bg-red-600 dark:bg-red-600 text-white hover:bg-red-700 dark:hover:bg-red-500 hover:-translate-y-1'
                   }`}
@@ -164,6 +201,14 @@ const Hero: React.FC<HeroProps> = ({ onGenerated }) => {
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
                       Generating...
+                    </span>
+                  ) : isUploading ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Uploading...
                     </span>
                   ) : (
                     'Generate Christmas Look'
