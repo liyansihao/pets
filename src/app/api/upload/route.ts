@@ -63,10 +63,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
-// 配置路由以支持文件上传
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
